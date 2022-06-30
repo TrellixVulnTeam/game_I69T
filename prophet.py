@@ -24,7 +24,7 @@ def predict_by_naive_bayes(X_train, y_train,X_test):
 
 
 class Prophet:
-    def __init__(self,id,algorithm,random_state,max_depth):
+    def __init__(self,id,algorithm,random_state=None,max_depth=None):
         self.id = id #lenofdata
         self.algorithm = algorithm
         self.random_state =random_state
@@ -64,12 +64,12 @@ class Prophet:
 def make_prophet_list():
     prophet_list = []
 
-    algorithms = ["tree","naive"]
-    for id in range(5,21,5):
+    algorithms = ["naive"]
+    for id in range(5,21):
         for algorithm in algorithms:
-            for random_state in [1,50,100]:
-                for max_depth in [5,10,100]:
-                    prophet_list.append(Prophet(id,algorithm,random_state,max_depth))
+            # for random_state in [1,50,100]:
+            #     for max_depth in [5,10,100]:
+            prophet_list.append(Prophet(id,algorithm))
     return prophet_list
 
 def check_resutl(result):
