@@ -12,11 +12,11 @@ def predict_by_decisiontree(X_train,Y_train,X_test,random_state=100,max_depth=10
 
 
 
-def predict_by_neural_network(data,label,dt,random_state=1):
-    clf = MLPClassifier(solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(5, 2), random_state = random_state)
-    clf.fit(data, label)
-    MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1,solver='lbfgs')
-    return clf.predict(dt)[0]
+# def predict_by_neural_network(data,label,dt,random_state=1):
+#     clf = MLPClassifier(solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(5, 2), random_state = random_state)
+#     clf.fit(data, label)
+#     MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1,solver='lbfgs')
+#     return clf.predict(dt)[0]
 
 def predict_by_naive_bayes(X_train, y_train,X_test):
     gnb = GaussianNB()
@@ -24,10 +24,11 @@ def predict_by_naive_bayes(X_train, y_train,X_test):
 
 
 class Prophet:
-    def __init__(self,id,algorithm):
-        self.id = id
+    def __init__(self,id,algorithm,random_state,max_depth):
+        self.id = id #lenofdata
         self.algorithm = algorithm
-        # self.random_state =random_state
+        self.random_state =random_state
+        self.max_depth = max_depth
         self.predict = None
         self.true = 1
         self.false = 1
@@ -53,7 +54,7 @@ class Prophet:
         X_train,Y_train,X_test = make_data(self.id)
 
         if self.algorithm == "tree":
-            self.predict = predict_by_decisiontree(X_train,Y_train,X_test)
+            self.predict = predict_by_decisiontree(X_train,Y_train,X_test,self.random_state,self.max_depth)
         else:
             self.predict = predict_by_naive_bayes(X_train,Y_train,X_test)
     def show(self):
@@ -64,9 +65,11 @@ def make_prophet_list():
     prophet_list = []
 
     algorithms = ["tree","naive"]
-    for id in range(5,10):
+    for id in range(5,21,5):
         for algorithm in algorithms:
-            prophet_list.append(Prophet(id,algorithm))
+            for random_state in [1,50,100]:
+                for max_depth in [5,10,100]:
+                    prophet_list.append(Prophet(id,algorithm,random_state,max_depth))
     return prophet_list
 
 def check_resutl(result):
@@ -78,13 +81,18 @@ def make_predict():
     global prophet_list
     big = 0
     small = 0
+
+    sample_space = [0 for i in range(19)]
     for prophet in prophet_list:
         prophet.make_predict()
+        sample_space[prophet.predict]+=1
         if prophet.predict >10:
             big += prophet.percent
         else:
             small += prophet.percent
     show_percent(big,small)
+    print([i for i in range(19)])
+    print(sample_space)
     if big>small:
         return "BIG"
     elif small > big:
