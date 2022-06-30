@@ -85,14 +85,14 @@ def make_predict():
     sample_space = [0 for i in range(19)]
     for prophet in prophet_list:
         prophet.make_predict()
-        sample_space[prophet.predict]+=1
+        # sample_space[prophet.predict]+=1
         if prophet.predict >10:
             big += prophet.percent
         else:
             small += prophet.percent
     show_percent(big,small)
-    print([i for i in range(19)])
-    print(sample_space)
+    # print([i for i in range(19)])
+    # print(sample_space)
     if big>small:
         return "BIG"
     elif small > big:
