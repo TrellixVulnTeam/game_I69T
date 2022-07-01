@@ -18,6 +18,7 @@ class Wallet:
         self.falseChain = 0
         self.maxFalse = 0
         self.percent = 0
+        self.history = []
     def check_predict(self,record):
 
         if self.predict == None:
@@ -34,8 +35,10 @@ class Wallet:
             self.falseChain+=1
             self.maxFalse = max(self.maxFalse,self.falseChain)
             self.money +=10
-        if self.true - self.false>=5:
-            quit_game("Hoan thanh")
+        # if self.true - self.false>=5:
+        #     quit_game("Hoan thanh")
+
+        self.history.append(self.true - self.false)
         self.percent = int(self.true*100/(self.true+self.false))
     def make_predict(self):
         self.predict = make_predict()
@@ -84,25 +87,30 @@ WL = Wallet(200)
 print(WL.predict)
 WL.bets()
 
-while 1:
-    record = create_record()
-    record.show()
-
-    WL.check_predict(record)
-    WL.show()
-    check_resutl(record.betTypeResult)
-
-    print("\n______________________________________________")
+try:
     while 1:
-        if is_betting():
-            a = time.time()
+        record = create_record()
+        record.show()
 
-            WL.make_predict()
-            print("{} x {}".format(WL.predict,WL.money))
-            # print("\a")
-            WL.bets()
-            b = time.time()
-            time.sleep(max(50-int(b-a),0))
-            break
+        WL.check_predict(record)
+        WL.show()
+        check_resutl(record.betTypeResult)
+
+        print("\n______________________________________________")
+        while 1:
+            if is_betting():
+                a = time.time()
+
+                WL.make_predict()
+                print("{} x {}".format(WL.predict,WL.money))
+                # print("\a")
+                WL.bets()
+                b = time.time()
+                time.sleep(max(50-int(b-a),0))
+                break
 
 
+except:
+    from draw import draw_result
+    turn = [i for i in range(1,len(WL.history)+1)]
+    draw_result(turn,WL.history)
