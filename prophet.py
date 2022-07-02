@@ -15,7 +15,7 @@ def predict_by_decisiontree(X_train,Y_train,X_test,random_state=100,max_depth=10
 
     tree.fit(X_train,Y_train)
 
-    score = tree.score(X_sample,Y_sample)
+    score = tree.score(X_sample,Y_sample)               #?????????????????????????
     predict = tree.predict(X_test)[0]
 
     return score,predict
@@ -68,25 +68,25 @@ def check_resutl(result):
         # prophet.show()
 def make_predict():
     global prophet_list
-    big = 0
-    small = 0
+    # big = 0
+    # small = 0
 
+    sampleSpace = [0 for i in range(19)]
     for prophet in prophet_list:
         prophet.make_predict()
-        print(prophet.predict, prophet.score,prophet.percent)
-        if prophet.predict >10:
-            big += prophet.percent*prophet.score
-        else:
-            small += prophet.percent*prophet.score
-    show_percent(big,small)
-    # print([i for i in range(19)])
-    # print(sample_space)
-    if big>small:
-        return "BIG"
-    elif small > big:
-        return "SMALL"
-    else:
-        return None
+        # print(prophet.predict, prophet.score,prophet.percent)
+
+        sampleSpace[prophet.predict] += prophet.percent* prophet.score #??????????????
+
+    show_sample_space(sampleSpace)
+
+    maxresult = max(sampleSpace)
+
+    for i in range(len(sampleSpace)):
+        if sampleSpace[i] == maxresult:           #??????????????????????????
+            if i>10:
+                return "BIG"
+            return "SMALL"
 
 def show_percent(big,small):
     big = int(big*50/(big+small))
@@ -94,3 +94,7 @@ def show_percent(big,small):
     text = "B"*big + "s"*small
     print(text)
 prophet_list = make_prophet_list()
+
+def show_sample_space(sampleSpace):
+    for i in range(3,11):
+        print(i," : ",round(sampleSpace[i],3), "\t\t\t", i+8," : ", round(sampleSpace[i+8],3))
