@@ -8,11 +8,11 @@ import random
 
 
 class Wallet:
-    def __init__(self,minmoney):
+    def __init__(self,minmoney=0,playing=False) :
         self.predict = make_predict()
         self.minmoney = minmoney
         self.money = minmoney
-        self.playing = True
+        self.playing = playing
         self.true = 0
         self.false = 0
         self.falseChain = 0
@@ -28,13 +28,13 @@ class Wallet:
         if self.predict in record.betTypeResult:
             self.true  +=1
             self.falseChain = 0
-            self.money -=10
-            self.money = max(self.money,self.minmoney) 
+            # self.money -=10
+            # self.money = max(self.money,self.minmoney) 
         else:
             self.false+=1 
             self.falseChain+=1
             self.maxFalse = max(self.maxFalse,self.falseChain)
-            self.money +=10
+            # self.money +=10
         # if self.true - self.false>=5:
         #     quit_game("Hoan thanh")
 
@@ -47,7 +47,6 @@ class Wallet:
     def bets(self):
         global indexBIG,indexSMALL,indexVND10K,indexVND50K,indexVND100K
         #########################
-        return
         if self.playing == False:
             return
 
@@ -73,17 +72,22 @@ from manipulation import  *
 from prophet import *
 from getAPI import *
 #_________________________________________________________________
-indexBIG = get_index("BIG")
-indexSMALL = get_index("SMALL")
-indexVND10K = get_index("VND10K")
-indexVND50K = get_index("VND50K")
-indexVND100K = get_index("VND100K")
 
-if None in [indexBIG,indexSMALL,indexVND10K,indexVND50K,indexVND100K]:
-    quit_game("cai dai that bai")
 
-start_game = input("start_game: ")
-WL = Wallet(200)
+try:
+    minmoney = int(input("minmoney: "))
+    WL = Wallet(minmoney,True)
+
+    indexBIG = get_index("BIG")
+    indexSMALL = get_index("SMALL")
+    indexVND10K = get_index("VND10K")
+    indexVND50K = get_index("VND50K")
+    indexVND100K = get_index("VND100K")
+
+    if None in [indexBIG,indexSMALL,indexVND10K,indexVND50K,indexVND100K]:
+        quit_game("cai dai that bai")
+except:
+    WL = Wallet()
 print(WL.predict)
 WL.bets()
 
