@@ -5,12 +5,13 @@ from getAPI import make_data
 def predict_by_decisiontree(X_train,Y_train,X_test,random_state=100,max_depth=10):
     tree = DecisionTreeClassifier(criterion = "gini",random_state = random_state,max_depth=max_depth, min_samples_leaf=5)
 
-    numofsample = len(X_test)
+    numofsample = len(X_test[0])
     length = len(X_train)
     X_sample = X_train[length-numofsample : length]
     Y_sample = Y_train[length-numofsample : length]
     X_train = X_train[0 : length-numofsample]
     Y_train = Y_train[0 : length-numofsample]
+
 
     tree.fit(X_train,Y_train)
 
@@ -29,8 +30,8 @@ class Prophet:
         self.predict = None
         self.true = 1
         self.false = 1
-        self.percent = 50
-        self.score = 0
+        self.percent = 0.5
+        self.score = 0.5
     
     def check_resutl(self,result):
         if self.predict == None:
@@ -47,7 +48,7 @@ class Prophet:
             self.true+=1
         else:
             self.false+=1
-        self.percent = self.true*100/(self.true+self.false)
+        self.percent = self.true/(self.true+self.false)
     def make_predict(self):
         X_train,Y_train,X_test = make_data(self.id)
         self.score,self.predict = predict_by_decisiontree(X_train,Y_train,X_test,self.random_state,self.max_depth)
@@ -72,11 +73,11 @@ def make_predict():
 
     for prophet in prophet_list:
         prophet.make_predict()
-        # print(prophet.predict, prophet.score,prophet.percent)
+        print(prophet.predict, prophet.score,prophet.percent)
         if prophet.predict >10:
-            big += prophet.percent
+            big += prophet.percent*prophet.score
         else:
-            small += prophet.percent
+            small += prophet.percent*prophet.score
     show_percent(big,small)
     # print([i for i in range(19)])
     # print(sample_space)
