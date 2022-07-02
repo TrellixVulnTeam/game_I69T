@@ -114,7 +114,8 @@ try:
                 break
 
 
-except:
+except NameError:
+    print(NameError)
     from draw import draw_result
     turn = [i for i in range(1,len(WL.history)+1)]
     draw_result(turn,WL.history)

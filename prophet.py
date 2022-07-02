@@ -36,15 +36,12 @@ class Prophet:
     def check_resutl(self,result):
         if self.predict == None:
             return
-        if "BIG" in result:
-            result = "BIG"
-        else:
-            result = "SMALL"
-        if self.predict >10:
-            predict = "BIG"
-        else:
-            predict = "SMALL"
-        if predict == result:
+        result = string_to_result(result)
+        # if self.predict >10:
+        #     predict = "BIG"
+        # else:
+        #     predict = "SMALL"
+        if self.predict == result:  #>>
             self.true+=1
         else:
             self.false+=1
@@ -53,7 +50,10 @@ class Prophet:
         X_train,Y_train,X_test = make_data(self.id)
         self.score,self.predict = predict_by_decisiontree(X_train,Y_train,X_test,self.random_state,self.max_depth)
 
-
+def string_to_result(strings):
+    if "BIG" in strings:
+        return "BIG"
+    return "SMALL"
 
 def make_prophet_list():
     prophet_list = []
@@ -68,25 +68,38 @@ def check_resutl(result):
         # prophet.show()
 def make_predict():
     global prophet_list
-    # big = 0
-    # small = 0
-
-    sampleSpace = [0 for i in range(19)]
+    big = 0
+    small = 0
     for prophet in prophet_list:
         prophet.make_predict()
-        # print(prophet.predict, prophet.score,prophet.percent)
+        print(prophet.predict,prophet.score,prophet.percent)
+        if prophet.predict == "BIG":
+            big+= prophet.percent* prophet.score
+        else:
+            small +=prophet.percent* prophet.score
 
-        sampleSpace[prophet.predict] += prophet.percent* prophet.score #??????????????
+    if big>small:
+        return "BIG"
+    if small>big:
+        return "SMALL"
+    return None
 
-    show_sample_space(sampleSpace)
+    # sampleSpace = [0 for i in range(19)]
+    # for prophet in prophet_list:
+    #     prophet.make_predict()
+    #     # print(prophet.predict, prophet.score,prophet.percent)
 
-    maxresult = max(sampleSpace)
+    #     sampleSpace[prophet.predict] += prophet.percent* prophet.score #??????????????
 
-    for i in range(len(sampleSpace)):
-        if sampleSpace[i] == maxresult:           #??????????????????????????
-            if i>10:
-                return "BIG"
-            return "SMALL"
+    # show_sample_space(sampleSpace)
+
+    # maxresult = max(sampleSpace)
+
+    # for i in range(len(sampleSpace)):
+    #     if sampleSpace[i] == maxresult:           #??????????????????????????
+    #         if i>10:
+    #             return "BIG"
+    #         return "SMALL"
 
 def show_percent(big,small):
     big = int(big*50/(big+small))

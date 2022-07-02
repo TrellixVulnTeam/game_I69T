@@ -3,6 +3,12 @@ import json
 import numpy
 import time
 
+
+
+def number_to_result(number):
+    if number>10:
+        return "BIG"
+    return "SMALL"
 def get_response():
     return requests.get("https://api-csn-sun.gameland.vip/api/v1/round/ended?limit=150&page=1&tableId=103")
 
@@ -23,10 +29,10 @@ def make_data(lenrecord):
     label = []
     for i in range(len(history)-lenrecord):
         data.append(history[i:i+lenrecord])
-        label.append(history[i+lenrecord])
+    #     label.append(history[i+lenrecord])
+        label.append(number_to_result(history[i+lenrecord]))
     dt = history[len(history)-lenrecord:len(history)]
     return data,label,[dt]
-
 
 
 class Record:
