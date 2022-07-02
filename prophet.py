@@ -1,38 +1,36 @@
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.neural_network import MLPClassifier
-from sklearn.naive_bayes import GaussianNB
-
 
 from getAPI import make_data
 
 def predict_by_decisiontree(X_train,Y_train,X_test,random_state=100,max_depth=10):
-    # global tree
     tree = DecisionTreeClassifier(criterion = "gini",random_state = random_state,max_depth=max_depth, min_samples_leaf=5)
-    return tree.fit(X_train,Y_train).predict(X_test)[0]
 
+    numofsample = len(X_test)
+    length = len(X_train)
+    X_sample = X_train[length-numofsample : length]
+    Y_sample = Y_train[length-numofsample : length]
+    X_train = X_train[0 : length-numofsample]
+    Y_train = Y_train[0 : length-numofsample]
 
+    tree.fit(X_train,Y_train)
 
-# def predict_by_neural_network(data,label,dt,random_state=1):
-#     clf = MLPClassifier(solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(5, 2), random_state = random_state)
-#     clf.fit(data, label)
-#     MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1,solver='lbfgs')
-#     return clf.predict(dt)[0]
+    score = tree.score(X_sample,Y_sample)
+    predict = tree.predict(X_test)[0]
 
-def predict_by_naive_bayes(X_train, y_train,X_test):
-    gnb = GaussianNB()
-    return gnb.fit(X_train, y_train).predict(X_test)[0]
+    return score,predict
+
 
 
 class Prophet:
-    def __init__(self,id,algorithm,random_state=None,max_depth=None):
-        self.id = id #lenofdata
-        self.algorithm = algorithm
+    def __init__(self,id,random_state=None,max_depth=None):
+        self.id = id
         self.random_state =random_state
         self.max_depth = max_depth
         self.predict = None
         self.true = 1
         self.false = 1
         self.percent = 50
+        self.score = 0
     
     def check_resutl(self,result):
         if self.predict == None:
@@ -52,24 +50,14 @@ class Prophet:
         self.percent = self.true*100/(self.true+self.false)
     def make_predict(self):
         X_train,Y_train,X_test = make_data(self.id)
+        self.score,self.predict = predict_by_decisiontree(X_train,Y_train,X_test,self.random_state,self.max_depth)
 
-        if self.algorithm == "tree":
-            self.predict = predict_by_decisiontree(X_train,Y_train,X_test,self.random_state,self.max_depth)
-        else:
-            self.predict = predict_by_naive_bayes(X_train,Y_train,X_test)
-    def show(self):
-        print(self.id,self.algorithm,self.predict,int(self.percent))
 
 
 def make_prophet_list():
     prophet_list = []
-
-    algorithms = ["naive"]
     for id in range(5,21):
-        for algorithm in algorithms:
-            # for random_state in [1,50,100]:
-            #     for max_depth in [5,10,100]:
-            prophet_list.append(Prophet(id,algorithm))
+        prophet_list.append(Prophet(id))
     return prophet_list
 
 def check_resutl(result):
@@ -82,10 +70,9 @@ def make_predict():
     big = 0
     small = 0
 
-    sample_space = [0 for i in range(19)]
     for prophet in prophet_list:
         prophet.make_predict()
-        # sample_space[prophet.predict]+=1
+        print(prophet.predict, prophet.score,prophet.percent)
         if prophet.predict >10:
             big += prophet.percent
         else:
