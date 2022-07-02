@@ -100,7 +100,7 @@ try:
         WL.show()
         check_resutl(record.betTypeResult)
 
-        print("\n______________________________________________")
+        # print("\n______________________________________________")
         while 1:
             if is_betting():
                 a = time.time()

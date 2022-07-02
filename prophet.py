@@ -72,7 +72,7 @@ def make_predict():
 
     for prophet in prophet_list:
         prophet.make_predict()
-        print(prophet.predict, prophet.score,prophet.percent)
+        # print(prophet.predict, prophet.score,prophet.percent)
         if prophet.predict >10:
             big += prophet.percent
         else:
@@ -88,7 +88,8 @@ def make_predict():
         return None
 
 def show_percent(big,small):
-    big = int(big*100/(big+small))
-    small = 100-big
-    print(r"BIG:{}% small:{}%".format(big,small))
+    big = int(big*50/(big+small))
+    small = 50-big
+    text = "B"*big + "s"*small
+    print(text)
 prophet_list = make_prophet_list()
